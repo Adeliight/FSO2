@@ -1,85 +1,55 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-
 const App = () => {
-  const [search, setSearch] = useState("");
-  const [countries, setCountries] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get("https://studies.cs.helsinki.fi/restcountries/api/all")
-      .then((response) => {
-        setCountries(response.data);
-      });
-  }, []);
-
-  const handleSearchChange = (event) => {
-    setSearch(event.target.value);
-  };
-
-  const filteredCountries =
-    search === ""
-      ? []
-      : countries.filter((country) =>
-          country.name.common.toLowerCase().includes(search.toLowerCase()),
-        );
+  const course = 'kurssi'
+  const parts = [
+    {
+      name: 'Osio yksi',
+      exercises: 4
+    },
+    {
+      name: 'Osio kaksi',
+      exercises: 8
+    },
+    {
+      name: 'Osio kolme',
+      exercises: 6
+    }
+  ]
 
   return (
     <div>
-      <div>
-        find countries <input value={search} onChange={handleSearchChange} />
-      </div>
-
-      <Content countries={filteredCountries} />
+      <Header course={course} />
+      <Content parts={parts} />
+      <Total parts={parts} />
     </div>
-  );
-};
+  )
+}
 
-const Content = ({ countries }) => {
-  if (countries.length > 10) {
-    return <p>Too many matches, specify another filter</p>;
-  }
+const Header = (props) => {
+  return <h1>{props.course}</h1>
+}
 
-  if (countries.length > 1) {
-    return (
-      <div>
-        {countries.map((country) => (
-          <div key={country.cca3}>{country.name.common}</div>
-        ))}
-      </div>
-    );
-  }
-
-  if (countries.length === 1) {
-    return <CountryDetail country={countries[0]} />;
-  }
-
-  return null;
-};
-
-const CountryDetail = ({ country }) => {
-  const languages = Object.values(country.languages || {});
-
+const Content = (props) => {
   return (
     <div>
-      <h1>{country.name.common}</h1>
-      <div>capital {country.capital ? country.capital[0] : "N/A"}</div>
-      <div>area {country.area}</div>
-
-      <h3>languages:</h3>
-      <ul>
-        {languages.map((language) => (
-          <li key={language}>{language}</li>
-        ))}
-      </ul>
-
-      <img
-        src={country.flags.png}
-        alt={`Flag of ${country.name.common}`}
-        width="150"
-      />
+      <Part name={props.parts[0].name} exercises={props.parts[0].exercises} />
+      <Part name={props.parts[1].name} exercises={props.parts[1].exercises} />
+      <Part name={props.parts[2].name} exercises={props.parts[2].exercises} />
     </div>
-  );
-};
+  )
+}
 
-export default App;
+const Total = (props) => {
+  return (
+    <p>
+      Number of exercises {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises}
+    </p>
+  )
+}
+
+const Part = (props) => {
+  return (
+    <p>{props.name} {props.exercises}</p>
+  )
+}
+
+export default App
